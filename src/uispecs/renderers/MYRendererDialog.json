@@ -1,6 +1,6 @@
 // #package uispecs
 
-// #section ISORendererDialog
+// #section MYRendererDialog
 
 {
   "type": "panel",
@@ -19,26 +19,15 @@
     },
     {
       "type": "field",
-      "label": "Isovalue:",
+      "label": "Opacity:",
       "children": [
         {
-          "type": "slider",
-          "bind": "isovalue",
-          "value": 0.5,
+          "type": "spinner",
+          "bind": "opacity",
+          "logarithmic": true,
+          "value": 1,
           "min": 0,
-          "max": 1,
           "step": 0.1
-        }
-      ]
-    },
-    {
-      "type": "field",
-      "label": "Color:",
-      "children": [
-        {
-          "type": "color-chooser",
-          "bind": "color",
-          "value": "#ddeeff"
         }
       ]
     },
@@ -50,6 +39,16 @@
           "type": "vector",
           "bind": "direction",
           "value": 1
+        }
+      ]
+    },
+    {
+      "type": "accordion",
+      "label": "Transfer function",
+      "children": [
+        {
+          "type": "panel",
+          "bind": "tfcontainer"
         }
       ]
     }

@@ -168,6 +168,7 @@ _getReaderForFileType(type) {
 
 _getDialogForRenderer(renderer) {
     switch (renderer) {
+        case 'my' : return MYRendererDialog;
         case 'mip' : return MIPRendererDialog;
         case 'iso' : return ISORendererDialog;
         case 'eam' : return EAMRendererDialog;

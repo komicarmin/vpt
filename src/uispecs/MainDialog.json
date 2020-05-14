@@ -40,6 +40,10 @@
                       "bind": "rendererSelect",
                       "options": [
                         {
+                          "value": "my",
+                          "label": "My renderer"
+                        },
+                        {
                           "value": "mip",
                           "label": "Maximum intensity projection"
                         },

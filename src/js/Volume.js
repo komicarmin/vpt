@@ -61,7 +61,12 @@ readModality(modalityName, handlers) {
 
     // TODO: here read modality format & number of components, ...
     let format, internalFormat;
-    if (components === 2) {
+    if (components === 4) {
+        internalFormat = gl.RGBA8;
+        format = gl.RGBA;
+        console.log("RGBA8");
+    }
+    else if (components === 2) {
         internalFormat = gl.RG8;
         format = gl.RG;
     } else {
@@ -73,6 +78,7 @@ readModality(modalityName, handlers) {
     modality.placements.forEach(placement => {
         this._reader.readBlock(placement.index, {
             onData: data => {
+                console.log(data);
                 const position = placement.position;
                 const block = blocks[placement.index];
                 const blockdim = block.dimensions;
@@ -89,6 +95,8 @@ readModality(modalityName, handlers) {
             }
         });
     });
+
+    console.log(blocks);
 }
 
 getTexture() {
