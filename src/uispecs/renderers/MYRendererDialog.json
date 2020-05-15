@@ -75,7 +75,7 @@
     },
     {
       "type": "field",
-      "label": "Light direction:",
+      "label": "Light direction/position:",
       "children": [
         {
           "type": "vector",
