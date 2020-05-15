@@ -12,7 +12,7 @@
         {
           "type": "spinner",
           "bind": "steps",
-          "value": 10,
+          "value": 250,
           "min": 1
         }
       ]
@@ -25,7 +25,7 @@
           "type": "spinner",
           "bind": "opacity",
           "logarithmic": true,
-          "value": 1,
+          "value": 10,
           "min": 0,
           "step": 0.1
         }
@@ -33,12 +33,77 @@
     },
     {
       "type": "field",
-      "label": "g direction:",
+      "label": "Light type:",
+      "children": [
+        {
+          "type": "dropdown",
+          "bind": "ltype",
+          "options": [
+            {
+              "value": 0,
+              "label": "Directional",
+              "selected": true
+            },
+            {
+              "value": 1,
+              "label": "Point"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "field",
+      "label": "Reflection model:",
+      "children": [
+        {
+          "type": "dropdown",
+          "bind": "reflection",
+          "options": [
+            {
+              "value": 0,
+              "label": "Lambertian",
+              "selected": true
+            },
+            {
+              "value": 1,
+              "label": "Phong"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "field",
+      "label": "Light direction:",
       "children": [
         {
           "type": "vector",
           "bind": "direction",
           "value": 1
+        }
+      ]
+    },
+    {
+      "type": "field",
+      "label": "Light intensity:",
+      "children": [
+        {
+          "type": "spinner",
+          "bind": "intensity",
+          "value": 30,
+          "step": 1
+        }
+      ]
+    },
+    {
+      "type": "field",
+      "label": "Light color:",
+      "children": [
+        {
+          "type": "color-chooser",
+          "bind": "lcolor",
+          "value": "#ffffff"
         }
       ]
     },

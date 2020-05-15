@@ -28,7 +28,11 @@ precision mediump float;
 
 uniform mediump sampler3D uVolume;
 uniform mediump sampler2D uTransferFunction;
+uniform int uLightType;
+uniform int uReflectionModel;
 uniform vec3 uLight;
+uniform float uIntensity;
+uniform vec3 uColor;
 uniform float uStepSize;
 uniform float uOffset;
 uniform float uAlphaCorrection;
@@ -44,8 +48,6 @@ void main() {
     vec3 rayDirection = vRayTo - vRayFrom;
     // Intersection with bounding box => vec2(tnear, tfar)
     vec2 tbounds = max(intersectCube(vRayFrom, rayDirection), 0.0);
-    // euler constant
-    float e = 2.7182818284;
     // If tnear intersection is further or equal than tfar intersection
     if (tbounds.x >= tbounds.y) {
         // Set color to black with opacity 1 (max)
@@ -64,11 +66,15 @@ void main() {
         // Values of current point in box
         float val;
         // Used for color of current voxel (on the way)
+        vec3 light;
+        vec3 lightReflect;
+        vec3 viewDir;
         vec4 colorSample;
         float lambert;
+        float specular;
+        vec3 specColor = vec3(1.0, 1.0, 1.0);
         // Ray accumulation (sum of all colors and alphas on the way)
         vec4 accumulator = vec4(0.0);
-        vec3 light = normalize(uLight);
         // Repeat process between both intersection points (0 < t < 1)
         // and stop if accumulation = 1 (other voxels don't have effect)
         while (t < 1.0 && accumulator.a < 0.99) {
@@ -78,20 +84,47 @@ void main() {
             val = texture(uVolume, pos).r;
             	
             vec3 grad = texture(uVolume, pos).gba;
-            grad /= 255.0;
             grad -= 0.5;
             grad *= 2.0;
-            grad *= 255.0;
             float mag = length(grad);
             vec3 normal = normalize(grad);
+            specular = 0.0;
 
-            lambert = max(dot(normal, light), 0.0);
+            float k = 1.0 - (exp(- 0.5 * mag));
+            colorSample = texture(uTransferFunction, vec2(val, k));
+
+            if(uLightType == 0) {
+                light = normalize(uLight);
+                lambert = max(dot(normal, light), 0.1);
+            }
+            else if (uLightType == 1) {
+                light = normalize(uLight - pos);
+                lambert = max(dot(normal, light), 0.1);
+                float distance = length(uLight - pos);
+                lambert *= (1.0 / (1.0 + (0.01 * distance * distance)));
+            }
+
+            colorSample.rgb = mix(colorSample.rgb, uColor, lambert);
+            colorSample.rgb *= lambert;
+        
+
+            if (uReflectionModel == 1 && lambert > 0.0) {
+                viewDir = normalize(-pos);
+                lightReflect = normalize(-reflect(light, normal));
+                float specAngle = max(dot(lightReflect, viewDir), 0.0);
+                specular = pow(specAngle, 4.0);
+                colorSample.rgb += specular * specColor;
+            }
 
             // Get color of voxel based on transfer function
-            float k = 1.0 - exp(-1.0*mag);
-            colorSample = texture(uTransferFunction, vec2(val, 0.5))  * lambert;
-            colorSample.a *= rayStepLength * uAlphaCorrection;
-            colorSample.rgb *= colorSample.a * mag;
+            // colorSample = texture(uTransferFunction, vec2(val, 0.5));
+            // colorSample.a *= rayStepLength * uAlphaCorrection * uIntensity * mag;
+            // colorSample.rgb = mix(colorSample.rgb, uColor, lambert);
+            // colorSample.rgb *= colorSample.a;
+            // accumulator += (1.0 - accumulator.a) * colorSample;
+            colorSample.a *= rayStepLength * uAlphaCorrection * uIntensity * mag;
+            colorSample.rgb *= colorSample.a;
+
             accumulator += (1.0 - accumulator.a) * colorSample;
             // Increase t by step size
             t += uStepSize;

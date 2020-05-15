@@ -11,7 +11,11 @@ constructor(gl, volume, environmentTexture, options) {
     Object.assign(this, {
         _stepSize        : 0.05,
         _alphaCorrection : 3,
-        _light    : [0.5, 0.5, 0.5]
+        _light    : [0.5, 0.5, 0.5],
+        _intensity  : 1,
+        _lcolor     : [1, 1, 1],
+        _ltype  : 0,
+        _reflection  : 0
     }, options);
 
     this._programs = WebGL.buildPrograms(this._gl, {
@@ -52,7 +56,11 @@ _generateFrame() {
     gl.bindTexture(gl.TEXTURE_2D, this._transferFunction);
 
     gl.uniform1i(program.uniforms.uVolume, 0);
+    gl.uniform1i(program.uniforms.uLightType, this._ltype);
+    gl.uniform1i(program.uniforms.uReflectionModel, this._reflection);
     gl.uniform3fv(program.uniforms.uLight, this._light);
+    gl.uniform1f(program.uniforms.uIntensity, this._intensity);
+    gl.uniform3fv(program.uniforms.uColor, this._lcolor);
     gl.uniform1i(program.uniforms.uTransferFunction, 1);
     gl.uniform1f(program.uniforms.uStepSize, this._stepSize);
     gl.uniform1f(program.uniforms.uAlphaCorrection, this._alphaCorrection);
